@@ -27,6 +27,8 @@ class MainWindow(Gtk.Window):
         grid = Gtk.Grid()
         self.add(grid)
 
+        grid.set_border_width(10)
+
         refresh_button = Gtk.Button(label="Refresh")
         refresh_button.connect("clicked", self.change_coin)
 
@@ -79,7 +81,7 @@ class MainWindow(Gtk.Window):
         xs = []
         ys = []
 
-        self.graph.title = f"Price Of {cur}"
+        self.graph.title = "Price Of {}".format(cur)
 
         for date, avg in Crypto.get_since(cur, datetime.datetime.now()-datetime.timedelta(days=days)):
             xs.append(date)

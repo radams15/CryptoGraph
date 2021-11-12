@@ -9,7 +9,7 @@ class Graph(Gtk.ScrolledWindow):
     def __init__(self):
         super().__init__()
 
-        self.set_border_width(10)
+
 
         self.fig = plt.figure()
         self.axis1 = self.fig.add_subplot(1,1,1)
