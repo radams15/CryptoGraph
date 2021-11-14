@@ -72,12 +72,12 @@ CREATE TABLE "Trade" (
             trade = Trade(account, raw[1], raw[2], raw[3], trade_id=raw[0])
             yield trade
 
-    def add_account(self, name, username, password):
+    def add_account(self, name, username, password, money=1000):
         hash_pass = sha256(password.encode()).hexdigest()
 
         cur = self.conn.cursor()
 
-        cur.execute("INSERT INTO Account VALUES (?, ?, ?)", (username, hash_pass, name))
+        cur.execute("INSERT INTO Account VALUES (?, ?, ?, ?)", (username, hash_pass, name, money))
 
         self.conn.commit()
 
