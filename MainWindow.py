@@ -93,7 +93,7 @@ class MainWindow(Gtk.Window):
         self.status_table = StatusTable(self.sell)
         self.status_table.set_vexpand(True)
 
-        header.pack_end(refresh_button)
+        header.pack_start(buy_button)
 
         grid.attach(self.left_header, 0, 1, 2, 1) # item, along, down, width, height
         grid.attach(self.predicted_label, 0, 2, 1, 1)
@@ -101,13 +101,13 @@ class MainWindow(Gtk.Window):
         grid.attach(self.change_label, 0, 4, 1, 1)
         grid.attach(self.currency_box, 0, 5, 2, 1)
         grid.attach(self.graph, 0, 6, 2, 1)
-        grid.attach(buy_button, 0, 7, 2, 1)
+        #grid.attach(buy_button, 0, 7, 2, 1)
 
         grid.attach(self.right_header, 2, 0, 2, 2)
         grid.attach(self.user_label, 2, 2, 1, 1)
         grid.attach(self.portfolio_label, 2, 3, 1, 1)
         grid.attach(self.total_label, 2, 4, 1, 1)
-        grid.attach(self.status_table, 2, 5, 2, 4)
+        grid.attach(self.status_table, 2, 5, 2, 3)
 
         grid.set_column_homogeneous(True)
 
