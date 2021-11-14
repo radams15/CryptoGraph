@@ -38,11 +38,12 @@ class MainWindow(Gtk.Window):
 
         grid.set_border_width(10)
 
-        refresh_button = Gtk.Button(label="Refresh")
-        refresh_button.connect("clicked", self.refresh)
+        #refresh_button = Gtk.Button(label="Refresh")
+        #refresh_button.connect("clicked", self.refresh)
 
         buy_button = Gtk.Button(label="Buy")
         buy_button.connect("clicked", self.buy)
+        buy_button.get_style_context().add_class("suggested-action")
 
         self.currency_box = Gtk.ComboBoxText()
         for cur in Crypto.get_currencies()[:100]:
