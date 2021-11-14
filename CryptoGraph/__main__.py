@@ -1,5 +1,4 @@
 import gi
-from sys import exit
 
 from .Database import Database
 
@@ -10,12 +9,7 @@ from .MainWindow import MainWindow
 
 def main():
     db = Database()
-    account = db.account_login("rhys", "rhysadams")
 
-    if account == None:
-        print("Invalid Login")
-        exit(1)
-
-    win = MainWindow(db, account)
+    win = MainWindow(db)
     win.show_all()
     Gtk.main()

@@ -1,57 +1,27 @@
 import datetime
+from sys import exit
 
 import gi
 
 from . import Crypto
-from .Database import Database
 from .StatusTable import StatusTable
 from .Trade import Trade
+from .EntryDialog import EntryDialog
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject
 
 from .Graph import Graph
 
-class EntryDialog(Gtk.MessageDialog):
-    def __init__(self, *args, **kwargs):
-        '''
-        Creates a new EntryDialog. Takes all the arguments of the usual
-        MessageDialog constructor plus one optional named argument
-        "default_value" to specify the initial contents of the entry.
-        '''
-        if 'default_value' in kwargs:
-            default_value = kwargs['default_value']
-            del kwargs['default_value']
-        else:
-            default_value = ''
-        super(EntryDialog, self).__init__(*args, **kwargs)
-        entry = Gtk.Entry()
-        entry.set_text(str(default_value))
-        entry.connect("activate",
-                      lambda ent, dlg, resp: dlg.response(resp),
-                      self, Gtk.ResponseType.OK)
-        self.vbox.pack_end(entry, True, True, 0)
-        self.vbox.show_all()
-        self.entry = entry
-    def set_value(self, text):
-        self.entry.set_text(text)
-    def run(self):
-        result = super(EntryDialog, self).run()
-        if result == Gtk.ResponseType.OK:
-            text = self.entry.get_text()
-        else:
-            text = None
-        return text
-
 class MainWindow(Gtk.Window):
 
     REFRESH_TIMEOUT = 5 # secs
 
-    def __init__(self, db, account):
+    def __init__(self, db):
         super().__init__()
 
         self.db = db
-        self.account = account
+        self.account = self.login()
 
         self.graph = Graph()
 
@@ -101,7 +71,6 @@ class MainWindow(Gtk.Window):
         grid.attach(self.change_label, 0, 4, 1, 1)
         grid.attach(self.currency_box, 0, 5, 2, 1)
         grid.attach(self.graph, 0, 6, 2, 1)
-        #grid.attach(buy_button, 0, 7, 2, 1)
 
         grid.attach(self.right_header, 2, 0, 2, 2)
         grid.attach(self.user_label, 2, 2, 1, 1)
@@ -112,6 +81,57 @@ class MainWindow(Gtk.Window):
         grid.set_column_homogeneous(True)
 
         self.refresh(ref=True)
+
+    def login(self):
+        username_box = EntryDialog(
+            transient_for=self,
+            flags=0,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.OK,
+            text="Login"
+        )
+
+        username_box.format_secondary_text("Username:")
+
+        username = username_box.run()
+
+        username_box.destroy()
+
+        password_box = EntryDialog(
+            transient_for=self,
+            flags=0,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.OK,
+            text="Login",
+            hidden=True
+        )
+
+        password_box.format_secondary_text("Password:")
+
+        password = password_box.run()
+
+        if not password or not username:
+            exit(1)
+
+        password_box.destroy()
+
+        account = self.db.account_login(username, password)
+
+        if account:
+            return account
+
+        dialog = Gtk.MessageDialog(
+            transient_for=self,
+            flags=0,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.OK,
+            text="Error",
+        )
+
+        dialog.format_secondary_text("Invalid username or password")
+        dialog.run()
+        dialog.destroy()
+        exit(1)
 
     def sell(self, data):
         trade = self.db.get_trade(data[-1])
@@ -146,7 +166,7 @@ class MainWindow(Gtk.Window):
     def buy(self, *args):
         cur = self.currency_box.get_active_text()
 
-        promptBox = EntryDialog(
+        prompt_box = EntryDialog(
             transient_for=self,
             flags=0,
             message_type=Gtk.MessageType.QUESTION,
@@ -154,11 +174,11 @@ class MainWindow(Gtk.Window):
             text="Buy?"
         )
 
-        promptBox.format_secondary_text(
+        prompt_box.format_secondary_text(
             "Quantity Of {} To Buy:".format(cur)
         )
 
-        response = promptBox.run()
+        response = prompt_box.run()
 
         if not response:
             return
@@ -168,10 +188,10 @@ class MainWindow(Gtk.Window):
             print(amount)
         except ValueError:
             print("Purchase cancelled")
-            promptBox.destroy()
+            prompt_box.destroy()
             return
 
-        promptBox.destroy()
+        prompt_box.destroy()
 
         dialog = Gtk.MessageDialog(
             transient_for=self,
