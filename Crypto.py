@@ -1,8 +1,11 @@
 import cryptocompare as cc
 from datetime import datetime as dt
 
+API_KEY = "932b4a295f2769a42b6c792a3f1d6d269c3883726e5355f648a3c7355ed50413"
 DEFAULT_REF = "GBP"
 EXCHANGE = "CCCAGG"
+
+cc.cryptocompare._set_api_key_parameter(API_KEY)
 
 def get_all(currency, ref=DEFAULT_REF):
     return get_since(currency, dt.now(), ref)

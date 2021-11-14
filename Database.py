@@ -12,6 +12,7 @@ CREATE TABLE "Account" (
     "username"	TEXT NOT NULL UNIQUE,
     "pass_hash"	TEXT NOT NULL,
     "name"	TEXT,
+    "money"	REAL,
     PRIMARY KEY("username")
 );
 """
@@ -53,6 +54,15 @@ CREATE TABLE "Trade" (
         cur.execute("DELETE FROM Trade WHERE trade_id IS ?", (trade.id,))
         self.conn.commit()
 
+    def get_trade(self, id):
+        cur = self.conn.cursor()
+
+        trade = next(cur.execute("SELECT * FROM Trade WHERE Trade.trade_id = ?", (id ,)))
+
+        if trade:
+            trade = Trade(self.get_account(trade[4]), trade[1], trade[2], trade[3], trade_id=trade[0])
+            return trade
+
     def get_trades(self, account):
         cur = self.conn.cursor()
 
@@ -73,12 +83,31 @@ CREATE TABLE "Trade" (
 
         return self.account_login(username, password)
 
+    def get_account(self, username):
+        cur = self.conn.cursor()
+
+        out = list(cur.execute("SELECT name, username, money FROM Account WHERE username IS ?", (username,)))
+
+        if len(out) == 1:
+            return Account(*out[0])
+        else:
+            return None
+
+    def update_account(self, account):
+        cur = self.conn.cursor()
+
+        cur.execute("UPDATE Account SET money = ?, name = ? WHERE username = ?", (account.money, account.name, account.username))
+
+        self.conn.commit()
+
+        return self.get_account(account.username)
+
     def account_login(self, username, password):
         hash_pass = sha256(password.encode()).hexdigest()
 
         cur = self.conn.cursor()
 
-        out = list(cur.execute("SELECT name, username FROM Account WHERE username IS ? AND pass_hash IS ?", (username, hash_pass)))
+        out = list(cur.execute("SELECT name, username, money FROM Account WHERE username IS ? AND pass_hash IS ?", (username, hash_pass)))
 
         if len(out) == 1:
             return Account(*out[0])
