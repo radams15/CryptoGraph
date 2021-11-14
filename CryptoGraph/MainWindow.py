@@ -2,15 +2,15 @@ import datetime
 
 import gi
 
-import Crypto
-from Database import Database
-from StatusTable import StatusTable
-from Trade import Trade
+from . import Crypto
+from .Database import Database
+from .StatusTable import StatusTable
+from .Trade import Trade
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject
 
-from Graph import Graph
+from .Graph import Graph
 
 class EntryDialog(Gtk.MessageDialog):
     def __init__(self, *args, **kwargs):

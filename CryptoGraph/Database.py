@@ -2,8 +2,8 @@ import sqlite3
 from hashlib import sha256
 from os import path
 
-from Account import Account
-from Trade import Trade
+from .Account import Account
+from .Trade import Trade
 
 
 class Database:
