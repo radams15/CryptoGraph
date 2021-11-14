@@ -18,7 +18,7 @@ def get_to(currency, start, ref=DEFAULT_REF):
 
         yield [date, avg]
 def get_since(currency, start, ref=DEFAULT_REF):
-    raw = cc.get_historical_price_day(currency, ref, exchange=EXCHANGE, toTs=dt.now())
+    raw = cc.get_historical_price_minute(currency, ref, exchange=EXCHANGE, toTs=dt.now())
 
     for day in raw:
         date = dt.fromtimestamp(day["time"])
