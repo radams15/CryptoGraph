@@ -1,4 +1,5 @@
 import gi
+from sys import exit
 
 from .Database import Database
 
